@@ -63,19 +63,30 @@ exports.deleteProvince = async function (req, res) {
 };
 exports.addState = async function (req, res) {
   try {
-    const { nameState } = req.body;
-    await State.findOne({
+    const { provinceId, nameState } = req.body;
+
+    await Province.findOne({
       where: {
-        nameState: nameState,
+        id: provinceId,
       },
-    }).then(async (state) => {
-      if (state) {
-        res.status(201).send({ message: " state already added!" });
-      } else {
-        await State.create({
-          nameState,
-        }).then((response) => {});
-        res.status(200).send({ message: " state added successfully!" });
+    }).then(async (province) => {
+      if (province) {
+        await State.findOne({
+          where: {
+            nameState: nameState,
+          },
+        }).then(async (state) => {
+          if (state) {
+            res.status(201).send({ message: " state already added!" });
+          } else {
+            await State.create({
+              nameState,
+            }).then((state) => {
+              province.addStates(state);
+              res.status(200).send({ message: " state added successfully!" });
+            });
+          }
+        });
       }
     });
   } catch (err) {
@@ -115,3 +126,10 @@ exports.deleteState = async function (req, res) {
     res.status(400).send(err);
   }
 };
+exports.addSiteTourisqtique = async function(req,res){
+  try{
+
+  }catch(err){
+    res.status(402).send(err)
+  }
+}
